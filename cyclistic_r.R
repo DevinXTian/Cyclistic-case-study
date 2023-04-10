@@ -54,6 +54,7 @@ all_data <- all_data %>%
   filter(ride_length > 0) %>% 
   filter(dist >0 | is.na(dist))
 
+# find summary info based on months
 all_data$started_at <- as.Date(all_data$started_at)
 
 all_data$month <- month(ymd(all_data$started_at))
