@@ -11,7 +11,7 @@ library(scales)
 
 # set wd
 getwd()
-setwd("D:/R projects/cyclistic case study")
+setwd("D:/R projects/cyclistic-case-study/data")
 
 # create list of all files in this folder
 myfiles = list.files(pattern='*.csv', full.names = T) 
@@ -54,11 +54,27 @@ all_data <- all_data %>%
   filter(ride_length > 0) %>% 
   filter(dist >0 | is.na(dist))
 
+all_data$started_at <- as.Date(all_data$started_at)
+
+all_data$month <- month(ymd(all_data$started_at))
+
+mymonths <- c("Jan","Feb","Mar",
+              "Apr","May","Jun",
+              "Jul","Aug","Sep",
+              "Oct","Nov","Dec")
+
+all_data$month <- mymonths[all_data$month]
+
+all_data %>% 
+  group_by(month) %>% 
+  dplyr::summarize(n = n()) %>% 
+  arrange(desc(n))
+
+
 # makes sure distance and ride length is greater than 0
 # this actually makes rows all NA (incorrect syntax, use filter instead)
 all_data <- all_data[all_data$dist > 0,]
 all_data <- all_data[all_data$ride_length > 0,]
-
 
 casual <- subset(all_data, member_casual == 'casual')
 member <- subset(all_data, member_casual == 'member')
@@ -71,6 +87,19 @@ casual %>%
   select(ride_length, dist) %>% 
   summary()
 
+casual %>% 
+  drop_na(start_station_name) %>% 
+  group_by(start_station_name) %>% 
+  dplyr::summarize(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  head(10)
+
+member %>% 
+  drop_na(start_station_name) %>% 
+  group_by(start_station_name) %>% 
+  dplyr::summarize(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  head(10)
 
 
 # analysis
